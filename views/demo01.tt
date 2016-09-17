@@ -1,0 +1,20 @@
+<h1>demo01.tt</h1>
+Hand coded html table in Template Toolkit
+<table width="80%" id="example-table">
+    <thead>
+        <tr>
+            [% FOREACH field IN fields %]
+		<th>[% field %]</th>
+            [% END  %]
+        </tr>
+    </thead>
+    <tbody>
+	[% FOREACH invoice IN invoices %]
+            <tr>
+		[% FOREACH field IN fields %]
+                    <td>[% invoice.$field %]</td>
+		[% END %]
+            </tr>
+	[% END  %]
+    </tbody>
+</table>

@@ -1,0 +1,27 @@
+<!-- DataTables -->
+<script type="text/javascript">
+ $(document).ready(function(){
+     $('#example-datatable').DataTable();
+ });
+</script>
+
+<h1>demo02.tt</h1>
+Hand coded html table in Template Toolkit with DataTables enabled
+<table width="80%" id="example-datatable">
+    <thead>
+        <tr>
+            [% FOREACH field IN fields %]
+		<th>[% field %]</th>
+            [% END  %]
+        </tr>
+    </thead>
+    <tbody>
+	[% FOREACH invoice IN invoices %]
+            <tr>
+		[% FOREACH field IN fields %]
+                    <td>[% invoice.$field %]</td>
+		[% END %]
+            </tr>
+	[% END  %]
+    </tbody>
+</table>

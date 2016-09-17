@@ -1,0 +1,67 @@
+#+REVEAL_ROOT: file:///Users/jason/source/reveal.js
+#+REVEAL_TRANS: fade
+#+REVEAL_HLEVEL: 10
+#+OPTIONS:  num:nil
+
+* Intro
+** Who am I
+Jason Lewis, part owner of a wholesale distribution business in Australia
+
+** Why am I doing this?
+ Wanted a way to replace Crystal Reports with something less proprietary
+* naive approach
+** hand coded tables in TT
+#+BEGIN_SRC TT
+    <tbody>
+	[% FOREACH invoice IN invoices %]
+            <tr>
+		[% FOREACH field IN fields %]
+                    <td>[% invoice.$field %]</td>
+		[% END %]
+            </tr>
+	[% END  %]
+    </tbody>
+#+END_SRC
+- pros:
+    very configurabe, you can  make it just how you like it.
+- cons:
+   *  not very reusable, you have to hand code each table for each report
+      changes to data structure will require updates to the view
+   *  not very dynamic
+* lets add DataTables to it
+  hand coded table + DataTables
+
+**  Include the css and js for DataTables in main.tt
+#+BEGIN_SRC html
+<!-- DataTables -->
+<link rel="stylesheet" href="[% request.uri_base %]/css/jquery.dataTables.min.css">
+<script type="text/javascript" src="javascripts/jquery.dataTables.min.js"></script>
+#+END_SRC
+
+** call the DataTable enabler after document ready
+in your view:
+#+BEGIN_SRC html
+<!-- DataTables -->
+<script type="text/javascript">
+ $(document).ready(function(){
+     $('#example').DataTable();
+ });
+</script>
+where #example is the CSS id of the table you want to make fancy
+
+#+END_SRC
+demo02 example
+* use power of json with DataTables
+  DataTables dynamic table from a json route
+** pros
+   very easy to reuse code
+** cons
+   - more difficult to customise your resulting table
+   - formatting result fields also more difficult
+* DBIx::Class
+  returning arrayref and converting to JSON
+* styling the table
+* table export options
+** CSV/Excel
+** PDF
+* As yet unresolved challenges

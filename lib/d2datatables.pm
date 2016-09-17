@@ -73,6 +73,7 @@ get '/api/demo03' => sub {
 
 get '/demo03' => sub {
   template 'demo03', {
+    title => 'demo03',
     json_data_url => '/api/demo03',
   };
 };

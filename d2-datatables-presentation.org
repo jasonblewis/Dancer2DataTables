@@ -2,10 +2,12 @@
 #+REVEAL_TRANS: fade
 #+REVEAL_HLEVEL: 10
 #+OPTIONS:  num:nil
-
+#+REVEAL_SLIDE_FOOTER: Jason Lewis - @jasonblewis
+#+REVEAL_EXTRA_CSS: local.css
 * Intro
 ** Who am I
-Jason Lewis, part owner of a wholesale distribution business in Australia
+ - Jason Lewis, part owner of a wholesale distribution business in Australia
+ - 
 
 ** Why am I doing this?
  Wanted a way to replace Crystal Reports with something less proprietary
@@ -51,13 +53,57 @@ where #example is the CSS id of the table you want to make fancy
 
 #+END_SRC
 demo02 example
-* use power of json with DataTables
-  DataTables dynamic table from a json route
-** pros
-   very easy to reuse code
-** cons
-   - more difficult to customise your resulting table
-   - formatting result fields also more difficult
+* using JSON with DataTables
+  build the HTML table headings in javascript and pass a JSON route to DataTables.
+DataTables takes care of retreiving the data and filling the table.
+ * pros
+   - very easy to reuse code
+ * cons
+   - more difficult to customise your resulting html table
+   - formatting result fields more difficult
+** build a json route
+Include the columns you want to render and the results from the query
+#+BEGIN_SRC perl
+get '/api/demo03' => sub {
+  my $sth = database->prepare(
+        'select * from invoices',
+      );
+  $sth->execute() or die $sth->errstr;
+
+  my $fields = $sth->{NAME};
+  my $invoices = $sth->fetchall_arrayref({});
+  
+  send_as JSON => { columns => [
+    { data => 'InvoiceId'},
+    { data => 'InvoiceDate'},
+    { data => 'CustomerId' },
+    { data => 'BillingAddress'}
+      ],
+    data => $invoices,
+  };
+};
+#+END_SRC
+** now for some JavaScript
+   build the table headers in javascript, and insert into the DIV #tableDiv
+#+BEGIN_SRC javascript
+ $( document ).ready( function( $ ) {
+     $.ajax({
+         "url": '[% json_data_url %]',
+         "success": function(json) {
+             var tableHeaders = '';  
+	     $.each(json.columns, function(i, val){
+                 tableHeaders += "<th>" + val.data + "</th>";
+             });
+             
+             $("#tableDiv").html(
+	       '<table id="displayTable" class="display compact" cellspacing="0"><thead><tr>'
+	       + tableHeaders + '</tr></thead></table>');
+             $('#displayTable').DataTable(json);
+         },
+         "dataType": "json"
+     });
+ });
+#+END_SRC
 * DBIx::Class
   returning arrayref and converting to JSON
 * styling the table

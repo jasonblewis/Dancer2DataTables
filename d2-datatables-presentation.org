@@ -1,13 +1,17 @@
 #+REVEAL_ROOT: file:///Users/jason/source/reveal.js
 #+REVEAL_TRANS: fade
 #+REVEAL_HLEVEL: 10
-#+OPTIONS:  num:nil
+#+OPTIONS:  num:nil toc:1
 #+REVEAL_SLIDE_FOOTER: Jason Lewis - @jasonblewis
 #+REVEAL_EXTRA_CSS: local.css
 * Intro
-** Who am I
- - Jason Lewis, part owner of a wholesale distribution business in Australia
- - Jack of all trades...
+
+  Jason Lewis
+
+  owner of a wholesale distribution business in Australia
+
+  Jack of all trades - master of none?
+** contact
  - Twittr: @jasonblewis
  - irc: k-man
  - email: jason@dickson.st

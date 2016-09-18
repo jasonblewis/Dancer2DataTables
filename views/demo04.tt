@@ -1,0 +1,38 @@
+<h1>[% title %]</h1>
+data retreived via a JSON API with buttons!!
+[% INCLUDE datatables_buttons.tt %]
+<div id="loader" class="loader"></div>
+<script>
+ $( document ).ready( function( $ ) {
+     $.ajax({
+         "url": '[% json_data_url %]',
+         "success": function(json) {
+             var tableHeaders = ''; 
+	     $.each(json.columns, function(i, val){
+                 tableHeaders += "<th>" + val.data + "</th>";
+             });
+             
+             $("#tableDiv").html('<table id="displayTable" class="display compact" cellspacing="0"><thead><tr>' + tableHeaders + '</tr></thead></table>');
+	     json.dom = 'Bfrtip'; // customise the table
+	     json.buttons = ['copy',
+			       'csv',
+			       'excel',
+			       {extend: 'pdfHtml5',
+				text: 'PDF',
+				orientation: 'landscape',
+				pageSize: 'A4',
+				download: 'download',
+				filename: '*',
+				extension: 'pdf'
+			       },
+			       'print'];
+
+             $('#displayTable').DataTable(json);
+         },
+         "dataType": "json"
+     });
+ });
+</script>
+<div id="tableDiv"></div>
+
+

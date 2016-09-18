@@ -181,6 +181,43 @@ get '/api/demo03' => sub {
   returning arrayref and converting to JSON
 * styling the table
 * table export options
-** CSV/Excel
-** PDF
+** Users are never satisfied
+The minute you show them this they are like "can I export it to Excel?"
+
+Luckily, DataTables makes that easy with the Buttons component.
+
+*** add the css for the Buttons
+Install pdfmake:
+ #+BEGIN_SRC bash
+bower install pdfmake
+ #+END_SRC
+
+add the css:
+ #+BEGIN_SRC html
+   <link rel="stylesheet" 
+     type="text/css" 
+     href="https://cdn.datatables.net/buttons/1.1.1/css/buttons.dataTables.min.css">
+ #+END_SRC
+
+add the js:
+#+BEGIN_SRC html
+<script src='/bower_components/pdfmake/build/pdfmake.min.js'></script>
+<script src='/bower_components/pdfmake/build/vfs_fonts.js'></script>
+#+END_SRC
+***  update the javascript
+#+BEGIN_SRC javascript
+json.dom = 'Bfrtip'; // customise the table
+json.buttons = ['copy',
+                'csv',
+                'excel',
+                { extend: 'pdfHtml5',
+                  text: 'PDF',
+                  orientation: 'landscape',
+                  pageSize: 'A4',
+                  download: 'download',
+                  filename: '*',
+                  extension: 'pdf'
+                },
+                'print'];
+#+END_SRC
 * As yet unresolved challenges

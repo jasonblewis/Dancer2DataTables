@@ -16,6 +16,9 @@
 <link rel="stylesheet" href="[% request.uri_base %]/css/jquery.dataTables.min.css">
 <script type="text/javascript" src="javascripts/jquery.dataTables.min.js"></script>
 
+<!-- DataTables Buttons -->
+<link rel="stylesheet" type="text/css" href="/css/buttons.dataTables.min.css">
+<script type="text/javascript" src="javascripts/dataTables.buttons.min.js"></script>
 
 </head>
 <body>

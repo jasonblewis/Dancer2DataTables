@@ -107,6 +107,35 @@ get '/demo04' => sub {
   };
 };
 
+get '/api/demo05' => sub {
+# return query as JSON
+  my $sth = database->prepare(
+        'select * from invoices',
+      );
+  $sth->execute() or die $sth->errstr;
+
+  my $fields = $sth->{NAME};
+  my $invoices = $sth->fetchall_arrayref({});
+
+  
+  send_as JSON => { columns => [
+    { className => 'dt-right', data => 'InvoiceId',      },
+    { className => 'dt-left',  data => 'InvoiceDate',    },
+    { className => 'dt-right', data => 'CustomerId',     },
+    { className => 'dt-left',  data => 'BillingAddress', title => 'Billing Address'}
+      ],
+    data => $invoices,
+  };
+};
+
+
+get '/demo05' => sub {
+  template 'demo04', { # now we can re-use the previous template
+    title => 'demo05',
+    json_data_url => '/api/demo05',
+  };
+};
+
 
 
 true;

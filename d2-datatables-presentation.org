@@ -12,14 +12,17 @@
 
   Jack of all trades - master of none?
 ** contact
- - Twittr: @jasonblewis
- - irc: k-man
  - email: jason@dickson.st
+ - IRC: k-man
+ - Twitter: @jasonblewis
 
 
 ** Why am I doing this?
- Wanted a way to replace Crystal Reports with something less proprietary.
+ - Replace Crystal Reports with something less proprietary.
+ - make reports accessable on the web
+
 ** Crystal Reports
+Existing system was built in Crystal Reports
  * Pros: 
    - quick to build reports
    - quite easy to customise and make the reports just so
@@ -63,31 +66,41 @@ get '/demo01' => sub {
 	[% END  %]
     </tbody>
 #+END_SRC
+*** Pros and Cons
+ - pros:
+   - simple to write
+ - Cons:
+   - resulting web page very static
+   - tables with many rows can become cumbersome
+ 
 
 * add DataTables to the mix
   hand coded table + DataTables
-
-**  Include the css and js for DataTables in main.tt
-in the main.tt layout:
+** What is DataTables?
+ - javascript framework for manipulating html tables
+ - adds about about 136k to your page (depending on components)
+ - datatables URL
+**  Include the CSS and JavaScript for DataTables 
+in the main.tt layout add:
 #+BEGIN_SRC html
 <!-- DataTables -->
-<link rel="stylesheet" href="[% request.uri_base %]/css/jquery.dataTables.min.css">
-<script type="text/javascript" src="javascripts/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" 
+      href="[% request.uri_base %]/css/jquery.dataTables.min.css">
+<script type="text/javascript" 
+        src="javascripts/jquery.dataTables.min.js">
+</script>
 #+END_SRC
 
 ** call the DataTable enabler after document ready
-add the js DataTable call to the view:
-#+BEGIN_SRC html
-<!-- DataTables -->
+add JavaScript DataTable call to the view:
+#+BEGIN_SRC javascript
 <script type="text/javascript">
  $(document).ready(function(){
      $('#example-datatable').DataTable();
  });
 </script>
-#example is the CSS id of the table you want to make fancy
-
 #+END_SRC
-demo 2 example
+#example-datatable is the CSS id of the table you want to make fancy
 ** add #example CSS id to table
 #+BEGIN_SRC html
 <table width="80%">
@@ -121,19 +134,19 @@ demo 2 example
 ** Hand coded html table with DataTables 
 - pros:
   * very configurabe, you can generate the HTML table just how you like it.
-  * easy to give rows and columns custom css identifies and classes
+  * easy to give rows and columns custom css identities and classes
 - cons:
   * not very reusable, you have to hand code each each report
-  * changes to data structure will require updates to the view
+  * changes to data structure may require updates to the view
 
 * using JSON with DataTables
-  build the HTML table headings in javascript and pass a JSON route to DataTables.
+  build the HTML table headings in javascript and pass a URL that returns JSON to DataTables.
 DataTables takes care of retreiving the data and filling the table.
  * pros
    - very easy to reuse code
  * cons
    - more difficult to customise your resulting html table
-   - formatting result fields more difficult
+   - adding custom CSS IDs to rows requires writing javascript
 ** build a json route
 Include the columns you want to render and the results from the query
 #+BEGIN_SRC perl

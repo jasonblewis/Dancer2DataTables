@@ -1,5 +1,4 @@
 <h1>[% title %]</h1>
-data retreived via a JSON API
 <div id="loader" class="loader"></div>
 <script>
  $( document ).ready( function( $ ) {

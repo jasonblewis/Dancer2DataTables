@@ -73,13 +73,13 @@ get '/api/demo03' => sub {
 
 get '/demo03' => sub {
   template 'demo03', {
-    title => 'demo03',
+    title => 'demo03 JSON API',
     json_data_url => '/api/demo03',
   };
 };
 
 get '/api/demo04' => sub {
-# return query as JSON
+# return query as JSON with buttons
   my $sth = database->prepare(
         'select * from invoices',
       );
@@ -90,10 +90,10 @@ get '/api/demo04' => sub {
 
   
   send_as JSON => { columns => [
-    { data => 'InvoiceId'},
-    { data => 'InvoiceDate'},
-    { data => 'CustomerId' },
-    { data => 'BillingAddress'}
+    { className => 'dt-right', data => 'InvoiceId',      },
+    { className => 'dt-left',  data => 'InvoiceDate',    },
+    { className => 'dt-right', data => 'CustomerId',     },
+    { className => 'dt-left',  data => 'BillingAddress', title => 'Billing Address'}
       ],
     data => $invoices,
   };
@@ -101,8 +101,8 @@ get '/api/demo04' => sub {
 
 
 get '/demo04' => sub {
-  template 'demo04', {
-    title => 'demo04',
+  template 'demo03', {
+    title => 'demo04 JSON API and CSS classes',
     json_data_url => '/api/demo04',
   };
 };
@@ -131,7 +131,7 @@ get '/api/demo05' => sub {
 
 get '/demo05' => sub {
   template 'demo04', { # now we can re-use the previous template
-    title => 'demo05',
+    title => 'demo05 JSON API with CSS classes and buttons',
     json_data_url => '/api/demo05',
   };
 };

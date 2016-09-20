@@ -1,5 +1,4 @@
 <h1>[% title %]</h1>
-data retreived via a JSON API with buttons!!
 [% INCLUDE datatables_buttons.tt %]
 <div id="loader" class="loader"></div>
 <script>

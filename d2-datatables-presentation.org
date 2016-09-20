@@ -1,16 +1,19 @@
 #+REVEAL_ROOT: file:///Users/jason/source/reveal.js
 #+REVEAL_TRANS: fade
 #+REVEAL_HLEVEL: 10
-#+OPTIONS:  num:nil toc:1
+#+OPTIONS:  num:nil toc:1 
 #+REVEAL_SLIDE_FOOTER: Jason Lewis - @jasonblewis
 #+REVEAL_EXTRA_CSS: local.css
-* Intro
+#+TITLE:  Lazy Programmers Guide to html tables in Dancer2
+#+EMAIL: jason@dickson.st
+
+* About me
 
   Jason Lewis
 
-  owner of a wholesale distribution business in Australia
+  Owner of a wholesale distribution business in Australia
 
-  Jack of all trades - master of none?
+  Jack of all trades...
 ** contact
  - email: jason@dickson.st
  - IRC: k-man
@@ -18,24 +21,29 @@
 
 
 ** Why am I doing this?
+
+Business reporting done in Crystal Reports
+
  - Replace Crystal Reports with something less proprietary.
  - make reports accessable on the web
 
 ** Crystal Reports
 Existing system was built in Crystal Reports
  * Pros: 
-   - quick to build reports
+   - very quick to build reports
    - quite easy to customise and make the reports just so
  * Cons: 
    - proprietary
    - distribution of reports difficult
    - win32 only
 ** Why Dancer2?
-Awesome community.
 
-* naive approach
- hand coded tables in TT
-*** Demo 1 route handler
+I looked around 
+
+Dancer has an awesome community.
+   
+* Hand coded html table in Template
+** Demo 1 route handler
 #+BEGIN_SRC perl
 get '/demo01' => sub {
 
@@ -54,7 +62,7 @@ get '/demo01' => sub {
     };
 };
 #+END_SRC
-*** Demo 1 view
+** Demo 1 view
 #+BEGIN_SRC html
     <tbody>
 	[% FOREACH invoice IN invoices %]
@@ -66,21 +74,23 @@ get '/demo01' => sub {
 	[% END  %]
     </tbody>
 #+END_SRC
-*** Pros and Cons
- - pros:
-   - simple to write
- - Cons:
-   - resulting web page very static
-   - tables with many rows can become cumbersome
+** Demo 1
+   http://localhost:5000/demo01
+** Pros and Cons
+- pros:
+  - simple to write
+- Cons:
+  - resulting web page very static
+  - tables with many rows cumbersome
  
 
 * add DataTables to the mix
   hand coded table + DataTables
 ** What is DataTables?
- - javascript framework for manipulating html tables
+ - JavaScript framework for manipulating html tables
  - adds about about 136k to your page (depending on components)
- - datatables URL
-**  Include the CSS and JavaScript for DataTables 
+ - https://datatables.net/
+** Include the CSS and JavaScript for DataTables 
 in the main.tt layout add:
 #+BEGIN_SRC html
 <!-- DataTables -->
@@ -131,46 +141,21 @@ add JavaScript DataTable call to the view:
 .
 </table>
 #+END_SRC
-** Hand coded html table with DataTables 
+** Pros and Cons of and coded html table with DataTables 
 - pros:
   * very configurabe, you can generate the HTML table just how you like it.
-  * easy to give rows and columns custom css identities and classes
+  * easy to give rows and columns custom css IDs and classes
 - cons:
   * not very reusable, you have to hand code each each report
   * changes to data structure may require updates to the view
 
 * using JSON with DataTables
-  build the HTML table headings in javascript and pass a URL that returns JSON to DataTables.
-DataTables takes care of retreiving the data and filling the table.
- * pros
-   - very easy to reuse code
- * cons
-   - more difficult to customise your resulting html table
-   - adding custom CSS IDs to rows requires writing javascript
-** build a json route
-Include the columns you want to render and the results from the query
-#+BEGIN_SRC perl
-get '/api/demo03' => sub {
-  my $sth = database->prepare(
-        'select * from invoices',
-      );
-  $sth->execute() or die $sth->errstr;
+  - build the HTML table headings in javascript
+  - pass in a URL that returns JSON to DataTables
+  - DataTables retrieves the data and fills the table.
 
-  my $fields = $sth->{NAME};
-  my $invoices = $sth->fetchall_arrayref({});
-  
-  send_as JSON => { columns => [
-    { data => 'InvoiceId'},
-    { data => 'InvoiceDate'},
-    { data => 'CustomerId' },
-    { data => 'BillingAddress'}
-      ],
-    data => $invoices,
-  };
-};
-#+END_SRC
-** now for some JavaScript
-   build the table headers in javascript, and insert into the DIV #tableDiv
+** build the table header in JavaScript
+insert the #tableDiv
 #+BEGIN_SRC javascript
  $( document ).ready( function( $ ) {
      $.ajax({
@@ -190,22 +175,72 @@ get '/api/demo03' => sub {
      });
  });
 #+END_SRC
-* DBIx::Class
-  returning arrayref and converting to JSON
+** build a json route (demo 3)
+Include the columns you want to render and the results from the query
+#+BEGIN_SRC perl
+get '/api/demo03' => sub {
+# return query as JSON
+  my $sth = database->prepare(
+        'select * from invoices',
+      );
+  $sth->execute() or die $sth->errstr;
+
+  my $fields = $sth->{NAME};
+  my $invoices = $sth->fetchall_arrayref({});
+
+  
+  send_as JSON => { columns => [
+    { data => 'InvoiceId'},
+    { data => 'InvoiceDate'},
+    { data => 'CustomerId' },
+    { data => 'BillingAddress'}
+      ],
+    data => $invoices,
+  };
+};
+#+END_SRC
+** Pros and Cons
+  - pros
+    - very easy to reuse code
+    - page response feels faster for the user
+  - cons
+    - you need an API route to return the data
+    - more difficult to customise your resulting html table
+    - adding custom CSS IDs to rows requires writing javascript
 * styling the table
+DataTables comes with some predefined CSS
+for example, classes for left and right alignment:
+ - dt-left
+ - dt-right
+** css classes
+Add CSS classes to columns
+#+BEGIN_SRC perl
+...
+  send_as JSON => { columns => [
+    { className => 'dt-right', data => 'InvoiceId',      },
+    { className => 'dt-left',  data => 'InvoiceDate',    },
+    { className => 'dt-right', data => 'CustomerId',     },
+    { className => 'dt-left',  data => 'BillingAddress', title => 'Billing Address'}
+      ],
+    data => $invoices,
+  };
+
+#+END_SRC
+** problem with this
+   formatting creeping into the data view
 * table export options
 ** Users are never satisfied
-The minute you show them this they are like "can I export it to Excel?"
+  - "Can I export it to Excel?"
+  - DataTables makes that easy with:
+  - Buttons component.
 
-Luckily, DataTables makes that easy with the Buttons component.
-
-*** add the css for the Buttons
+*** CSS and JavaScript for DataTables Buttons
 Install pdfmake:
  #+BEGIN_SRC bash
 bower install pdfmake
  #+END_SRC
 
-add the css:
+add the DataTables Buttons css:
  #+BEGIN_SRC html
    <link rel="stylesheet" 
      type="text/css" 
@@ -214,10 +249,13 @@ add the css:
 
 add the js:
 #+BEGIN_SRC html
+<script src="/javascripts/buttons.html5.min.js"></script>
+<script src="/javascripts/buttons.print.min.js"></script>
 <script src='/bower_components/pdfmake/build/pdfmake.min.js'></script>
 <script src='/bower_components/pdfmake/build/vfs_fonts.js'></script>
 #+END_SRC
-***  update the javascript
+***  add to our javascript
+Add this to our JavaScript portion from before
 #+BEGIN_SRC javascript
 json.dom = 'Bfrtip'; // customise the table
 json.buttons = ['copy',
@@ -233,8 +271,5 @@ json.buttons = ['copy',
                 },
                 'print'];
 #+END_SRC
-* Styling and formatting
-** css classes
-Pre-defined css classes
-
+Demo 04
 * As yet unresolved challenges

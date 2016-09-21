@@ -12,7 +12,7 @@
              });
              
              $("#tableDiv").html('<table id="displayTable" class="display compact" cellspacing="0"><thead><tr>' + tableHeaders + '</tr></thead></table>');
-	     json.dom = 'Bfrtip'; // customise the table
+	     json.dom = 'Blfrtip'; // customise the table
 	     json.buttons = ['copy',
 			       'csv',
 			       'excel',

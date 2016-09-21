@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Lazy Programmers Guide to html tables in Dancer2</title>
+<meta name="author" content="(Jason Lewis)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="/css/reveal.css"/>
+
+<link rel="stylesheet" href="/css/theme/moon.css" id="theme"/>
+
+<link rel="stylesheet" href="local.css"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = '/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1 class="title">Lazy Programmers Guide to html tables in Dancer2</h1><h2 class="author">Jason Lewis</h2><p class="date">Created: 2016-09-21 Wed 10:42</p>
+</section>
+<section id="table-of-contents">
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#/slide-orgheadline5">About me</a></li>
+<li><a href="#/slide-orgheadline10">Hand coded html table in Template</a></li>
+<li><a href="#/slide-orgheadline18">add DataTables to the mix</a></li>
+<li><a href="#/slide-orgheadline23">using JSON with DataTables</a></li>
+<li><a href="#/slide-orgheadline28">styling the table</a></li>
+<li><a href="#/slide-orgheadline38">table export options</a></li>
+</ul>
+</div>
+</div>
+</section>
+
+<section>
+<section id="slide-orgheadline5">
+<h2 id="orgheadline5">About me</h2>
+<p>
+Jason Lewis
+</p>
+
+<p>
+Owner of a wholesale distribution business in Australia
+</p>
+
+<p>
+Jack of all trades…
+</p>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline1">
+<h3 id="orgheadline1">contact</h3>
+<ul>
+<li>email: jason@dickson.st</li>
+<li>IRC: k-man</li>
+<li>Twitter: @jasonblewis</li>
+
+</ul>
+
+
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline2">
+<h3 id="orgheadline2">Why am I doing this?</h3>
+<p>
+Business reporting done in Crystal Reports
+</p>
+
+<ul>
+<li>Replace Crystal Reports with something less proprietary.</li>
+<li>make reports accessable on the web</li>
+
+</ul>
+
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline3">
+<h3 id="orgheadline3">Crystal Reports</h3>
+<p>
+Existing system was built in Crystal Reports
+</p>
+<ul>
+<li>Pros: 
+<ul>
+<li>very quick to build reports</li>
+<li>quite easy to customise and make the reports just so</li>
+
+</ul></li>
+<li>Cons: 
+<ul>
+<li>proprietary</li>
+<li>distribution of reports difficult</li>
+<li>not easy to put the reports on the web</li>
+<li>win32 only</li>
+
+</ul></li>
+
+</ul>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline4">
+<h3 id="orgheadline4">Why Dancer2?</h3>
+<p>
+I looked around 
+</p>
+
+<p>
+Dancer has an awesome community.
+</p>
+
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline10">
+<h2 id="orgheadline10">Hand coded html table in Template</h2>
+<div class="outline-text-2" id="text-orgheadline10">
+</div><div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline6">
+<h3 id="orgheadline6">Route handler</h3>
+<div class="org-src-container">
+
+<pre  class="src src-perl">get <span style="color: #E6DB74;">'/demo01'</span> =&gt; <span style="color: #F92672;">sub</span> {
+
+  <span style="color: #F92672;">my</span> <span style="color: #FD971F;">$sth</span> = database-&gt;prepare(
+        <span style="color: #E6DB74;">'select * from invoices'</span>,
+      );
+  $sth-&gt;execute() <span style="color: #66D9EF;">or</span> <span style="color: #F92672;">die</span> $sth-&gt;errstr;
+
+  <span style="color: #F92672;">my</span> <span style="color: #FD971F;">$fields</span> = $sth-&gt;{<span style="color: #E6DB74;">NAME</span>};
+  <span style="color: #F92672;">my</span> <span style="color: #FD971F;">$invoices</span> = $sth-&gt;fetchall_arrayref({});
+
+  template <span style="color: #E6DB74;">'demo01'</span>,
+    { <span style="color: #E6DB74;">title</span> =&gt; <span style="color: #E6DB74;">'demo01'</span>,
+      <span style="color: #E6DB74;">fields</span> =&gt; $fields,
+      <span style="color: #E6DB74;">invoices</span> =&gt; $invoices,
+    };
+};
+</pre>
+</div>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline7">
+<h3 id="orgheadline7">View</h3>
+<div class="org-src-container">
+
+<pre  class="src src-html">&lt;<span style="color: #A6E22E;">table</span> <span style="color: #FD971F;">width</span>=<span style="color: #E6DB74;">"80%"</span> <span style="color: #FD971F;">id</span>=<span style="color: #E6DB74;">"example-table"</span>&gt;
+...
+    &lt;<span style="color: #A6E22E;">tbody</span>&gt;
+        [% FOREACH invoice IN invoices %]
+            &lt;<span style="color: #A6E22E;">tr</span>&gt;
+                [% FOREACH field IN fields %]
+                    &lt;<span style="color: #A6E22E;">td</span>&gt;[% invoice.$field %]&lt;/<span style="color: #A6E22E;">td</span>&gt;
+                [% END %]
+            &lt;/<span style="color: #A6E22E;">tr</span>&gt;
+        [% END  %]
+    &lt;/<span style="color: #A6E22E;">tbody</span>&gt;
+&lt;/<span style="color: #A6E22E;">table</span>&gt;
+</pre>
+</div>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline8">
+<h3 id="orgheadline8">Demo 1</h3>
+<p>
+<a href="http://localhost:5000/demo01">http://localhost:5000/demo01</a>
+</p>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline9">
+<h3 id="orgheadline9">Pros and Cons</h3>
+<ul>
+<li>pros:
+<ul>
+<li>simple to write</li>
+
+</ul></li>
+<li>Cons:
+<ul>
+<li>resulting web page very static</li>
+<li>tables with many rows cumbersome</li>
+
+</ul></li>
+
+</ul>
+
+
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline18">
+<h2 id="orgheadline18">add DataTables to the mix</h2>
+<p>
+hand coded table + DataTables
+</p>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline11">
+<h3 id="orgheadline11">What is DataTables?</h3>
+<ul>
+<li>JavaScript framework for manipulating html tables</li>
+<li>adds about about 136k to your page (depending on components)</li>
+<li><a href="https://datatables.net/">https://datatables.net/</a></li>
+
+</ul>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline12">
+<h3 id="orgheadline12">Include the CSS and JavaScript for DataTables</h3>
+<p>
+in the main.tt layout add:
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-html"><span style="color: #75715E;">&lt;!-- </span><span style="color: #75715E;">DataTables </span><span style="color: #75715E;">--&gt;</span>
+&lt;<span style="color: #A6E22E;">link</span> <span style="color: #FD971F;">rel</span>=<span style="color: #E6DB74;">"stylesheet"</span> 
+      <span style="color: #FD971F;">href</span>=<span style="color: #E6DB74;">"[% request.uri_base %]/css/jquery.dataTables.min.css"</span>&gt;
+&lt;<span style="color: #A6E22E;">script</span> <span style="color: #FD971F;">type</span>=<span style="color: #E6DB74;">"text/javascript"</span> 
+        <span style="color: #FD971F;">src</span>=<span style="color: #E6DB74;">"javascripts/jquery.dataTables.min.js"</span>&gt;
+&lt;/<span style="color: #A6E22E;">script</span>&gt;
+</pre>
+</div>
+
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline13">
+<h3 id="orgheadline13">call the DataTable enabler after document ready</h3>
+<p>
+add JavaScript DataTable call to the view:
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-javascript">&lt;script type=<span style="color: #E6DB74;">"text/javascript"</span>&gt;
+ $(document).ready(<span style="color: #F92672;">function</span>(){
+     $(<span style="color: #E6DB74;">'#example-datatable'</span>).DataTable();
+ });
+&lt;/script&gt;
+</pre>
+</div>
+<p>
+#example-datatable is the CSS id of the table you want to make fancy
+</p>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline14">
+<h3 id="orgheadline14">add #example CSS id to table</h3>
+<div class="org-src-container">
+
+<pre  class="src src-html">&lt;<span style="color: #A6E22E;">table</span> <span style="color: #FD971F;">width</span>=<span style="color: #E6DB74;">"80%"</span>&gt;
+    &lt;<span style="color: #A6E22E;">thead</span>&gt;
+        &lt;<span style="color: #A6E22E;">tr</span>&gt;
+            [% FOREACH field IN fields %]
+                &lt;<span style="color: #A6E22E;">th</span>&gt;[% field %]&lt;/<span style="color: #A6E22E;">th</span>&gt;
+            [% END  %]
+        &lt;/<span style="color: #A6E22E;">tr</span>&gt;
+    &lt;/<span style="color: #A6E22E;">thead</span>&gt;
+    ...
+&lt;/<span style="color: #A6E22E;">table</span>&gt;
+</pre>
+</div>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline15">
+<h3 id="orgheadline15">add #example CSS id to table</h3>
+<div class="org-src-container">
+
+<pre  class="src src-html">&lt;<span style="color: #A6E22E;">table</span> <span style="color: #FD971F;">width</span>=<span style="color: #E6DB74;">"80%"</span> <span style="color: #FD971F;">id</span>=<span style="color: #E6DB74;">"example-datatable"</span>&gt;
+    &lt;<span style="color: #A6E22E;">thead</span>&gt;
+        &lt;<span style="color: #A6E22E;">tr</span>&gt;
+            [% FOREACH field IN fields %]
+                &lt;<span style="color: #A6E22E;">th</span>&gt;[% field %]&lt;/<span style="color: #A6E22E;">th</span>&gt;
+            [% END  %]
+        &lt;/<span style="color: #A6E22E;">tr</span>&gt;
+    &lt;/<span style="color: #A6E22E;">thead</span>&gt;
+    ...
+&lt;/<span style="color: #A6E22E;">table</span>&gt;
+</pre>
+</div>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline16">
+<h3 id="orgheadline16">Demo 02</h3>
+<p>
+<a href="http://localhost:5000/demo02">http://localhost:5000/demo02</a>
+</p>
+
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline17">
+<h3 id="orgheadline17">Pros and Cons of hand coded html tables with DataTables</h3>
+<ul>
+<li>pros:
+<ul>
+<li>very configurabe, you can generate the HTML table just how you like it.</li>
+<li>easy to give rows and columns custom css IDs and classes</li>
+
+</ul></li>
+<li>cons:
+<ul>
+<li>not very reusable, you have to hand code each each report</li>
+<li>changes to data structure may require updates to the view</li>
+
+</ul></li>
+
+</ul>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline23">
+<h2 id="orgheadline23">using JSON with DataTables</h2>
+<ul>
+<li>build the HTML table headings in javascript</li>
+<li>pass in a URL that returns JSON to DataTables</li>
+<li>DataTables retrieves the data and fills the table.</li>
+
+</ul>
+
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline19">
+<h3 id="orgheadline19">build the table header in JavaScript</h3>
+<p>
+insert the #tableDiv
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-javascript">$( document ).ready( <span style="color: #F92672;">function</span>( <span style="color: #FD971F;">$</span> ) {
+    $.ajax({
+        <span style="color: #E6DB74;">"url"</span>: <span style="color: #E6DB74;">'[% json_data_url %]'</span>,
+        <span style="color: #E6DB74;">"success"</span>: <span style="color: #F92672;">function</span>(<span style="color: #FD971F;">json</span>) {
+            <span style="color: #F92672;">var</span> <span style="color: #FD971F;">tableHeaders</span> = <span style="color: #E6DB74;">''</span>;  
+            $.each(json.columns, <span style="color: #F92672;">function</span>(<span style="color: #FD971F;">i</span>, <span style="color: #FD971F;">val</span>){
+                tableHeaders += <span style="color: #E6DB74;">"&lt;th&gt;"</span> + val.data + <span style="color: #E6DB74;">"&lt;/th&gt;"</span>;
+            });
+
+            $(<span style="color: #E6DB74;">"#tableDiv"</span>).html(
+              <span style="color: #E6DB74;">'&lt;table id="displayTable"      \</span>
+<span style="color: #E6DB74;">                class="display compact"      \</span>
+<span style="color: #E6DB74;">                cellspacing="0"&gt;&lt;thead&gt;&lt;tr&gt;'</span>
+              + tableHeaders + <span style="color: #E6DB74;">'&lt;/tr&gt;&lt;/thead&gt;&lt;/table&gt;'</span>);
+            $(<span style="color: #E6DB74;">'#displayTable'</span>).DataTable(json);
+        },
+        <span style="color: #E6DB74;">"dataType"</span>: <span style="color: #E6DB74;">"json"</span>
+    });
+});
+</pre>
+</div>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline20">
+<h3 id="orgheadline20">build a json route</h3>
+<p>
+Include the columns you want to render and the results from the query
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-perl">get <span style="color: #E6DB74;">'/api/demo03'</span> =&gt; <span style="color: #F92672;">sub</span> {
+<span style="color: #75715E;"># </span><span style="color: #75715E;">return query as JSON</span>
+  <span style="color: #F92672;">my</span> <span style="color: #FD971F;">$sth</span> = database-&gt;prepare(
+        <span style="color: #E6DB74;">'select * from invoices'</span>,
+      );
+  $sth-&gt;execute() <span style="color: #66D9EF;">or</span> <span style="color: #F92672;">die</span> $sth-&gt;errstr;
+
+  <span style="color: #F92672;">my</span> <span style="color: #FD971F;">$invoices</span> = $sth-&gt;fetchall_arrayref({});
+
+  send_as <span style="color: #E6DB74;">JSON</span> =&gt; { <span style="color: #E6DB74;">columns</span> =&gt; [
+    { <span style="color: #E6DB74;">data</span> =&gt; <span style="color: #E6DB74;">'InvoiceId'</span>},
+    { <span style="color: #E6DB74;">data</span> =&gt; <span style="color: #E6DB74;">'InvoiceDate'</span>},
+    { <span style="color: #E6DB74;">data</span> =&gt; <span style="color: #E6DB74;">'CustomerId'</span> },
+    { <span style="color: #E6DB74;">data</span> =&gt; <span style="color: #E6DB74;">'BillingAddress'</span>}
+      ],
+    <span style="color: #E6DB74;">data</span> =&gt; $invoices,
+  };
+};
+</pre>
+</div>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline21">
+<h3 id="orgheadline21">Demo 03</h3>
+<p>
+<a href="http://localhost:5000/demo03">http://localhost:5000/demo03</a>
+</p>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline22">
+<h3 id="orgheadline22">Pros and Cons</h3>
+<ul>
+<li>pros
+<ul>
+<li>very easy to reuse code</li>
+<li>page response feels faster for the user</li>
+
+</ul></li>
+<li>cons
+<ul>
+<li>you need an API route to return the data</li>
+<li>more difficult to customise your resulting html table</li>
+<li>adding custom CSS IDs to rows requires writing javascript</li>
+
+</ul></li>
+
+</ul>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline28">
+<h2 id="orgheadline28">styling the table</h2>
+<p>
+DataTables comes with some predefined CSS
+for example, classes for left and right alignment:
+</p>
+<ul>
+<li>dt-left</li>
+<li>dt-right</li>
+
+</ul>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline24">
+<h3 id="orgheadline24">css classes</h3>
+<p>
+Add CSS classes to columns
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-perl">&#8230;
+send_as <span style="color: #E6DB74;">JSON</span> =&gt; { <span style="color: #E6DB74;">columns</span> =&gt; [
+  { <span style="color: #E6DB74;">className</span> =&gt; <span style="color: #E6DB74;">'dt-right'</span>, <span style="color: #E6DB74;">data</span> =&gt; <span style="color: #E6DB74;">'InvoiceId'</span>,      },
+  { <span style="color: #E6DB74;">className</span> =&gt; <span style="color: #E6DB74;">'dt-left'</span>,  <span style="color: #E6DB74;">data</span> =&gt; <span style="color: #E6DB74;">'InvoiceDate'</span>,    },
+  { <span style="color: #E6DB74;">className</span> =&gt; <span style="color: #E6DB74;">'dt-right'</span>, <span style="color: #E6DB74;">data</span> =&gt; <span style="color: #E6DB74;">'CustomerId'</span>,     },
+  { <span style="color: #E6DB74;">className</span> =&gt; <span style="color: #E6DB74;">'dt-left'</span>,  <span style="color: #E6DB74;">data</span> =&gt; <span style="color: #E6DB74;">'BillingAddress'</span>,
+       <span style="color: #E6DB74;">title</span> =&gt; <span style="color: #E6DB74;">'Billing Address'</span>}
+    ],
+  <span style="color: #E6DB74;">data</span> =&gt; $invoices,
+};
+</pre>
+</div>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline25">
+<h3 id="orgheadline25">Demo 04</h3>
+<p>
+<a href="http://localhost:5000/demo04">http://localhost:5000/demo04</a>
+</p>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline26">
+<h3 id="orgheadline26">Other columns properties</h3>
+<p>
+columns has many other properties that can be useful
+</p>
+<ul>
+<li>name: Descriptive name for the column</li>
+<li>title: Column title</li>
+<li>visible: enable or disable display of this column</li>
+
+</ul>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline27">
+<h3 id="orgheadline27">problem with this approach</h3>
+<p>
+formatting creeping into the data view
+</p>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline38">
+<h2 id="orgheadline38">table export options</h2>
+<div class="outline-text-2" id="text-orgheadline38">
+</div><div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline29">
+<h3 id="orgheadline29">Users are never satisfied</h3>
+<ul>
+<li>Can I export it to Excel?</li>
+<li>DataTables makes that easy</li>
+<li>Buttons component.</li>
+
+</ul>
+
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline30">
+<h3 id="orgheadline30">CSS and JavaScript for DataTables Buttons</h3>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline31">
+<h3 id="orgheadline31">Install pdfmake</h3>
+<div class="org-src-container">
+
+<pre  class="src src-bash"><span style="color: #F92672;">cd</span> MyApp/public
+bower install pdfmake
+</pre>
+</div>
+
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline32">
+<h3 id="orgheadline32">add the DataTables Buttons css</h3>
+<div class="org-src-container">
+
+<pre  class="src src-html">&lt;<span style="color: #A6E22E;">link</span> <span style="color: #FD971F;">rel</span>=<span style="color: #E6DB74;">"stylesheet"</span> 
+  <span style="color: #FD971F;">type</span>=<span style="color: #E6DB74;">"text/css"</span> 
+  <span style="color: #FD971F;">href</span>=<span style="color: #E6DB74;">"https://cdn.datatables.net/buttons/1.1.1/css/buttons.dataTables.min.css"</span>&gt;
+</pre>
+</div>
+
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline33">
+<h3 id="orgheadline33">add the JavaScript</h3>
+<div class="org-src-container">
+
+<pre  class="src src-html">&lt;<span style="color: #A6E22E;">script</span> <span style="color: #FD971F;">src</span>=<span style="color: #E6DB74;">"/javascripts/buttons.html5.min.js"</span>&gt;&lt;/<span style="color: #A6E22E;">script</span>&gt;
+&lt;<span style="color: #A6E22E;">script</span> <span style="color: #FD971F;">src</span>=<span style="color: #E6DB74;">"/javascripts/buttons.print.min.js"</span>&gt;&lt;/<span style="color: #A6E22E;">script</span>&gt;
+&lt;<span style="color: #A6E22E;">script</span> <span style="color: #FD971F;">src</span>='/bower_components/pdfmake/build/pdfmake.min.js'&gt;&lt;/<span style="color: #A6E22E;">script</span>&gt;
+&lt;<span style="color: #A6E22E;">script</span> <span style="color: #FD971F;">src</span>='/bower_components/pdfmake/build/vfs_fonts.js'&gt;&lt;/<span style="color: #A6E22E;">script</span>&gt;
+</pre>
+</div>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline34">
+<h3 id="orgheadline34">add buttons option to our javascript</h3>
+<p>
+Add this to our JavaScript from before
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-javascript">json.dom = <span style="color: #E6DB74;">'Blfrtip'</span>; <span style="color: #75715E;">// </span><span style="color: #75715E;">customise the table</span>
+json.buttons = [<span style="color: #E6DB74;">'copy'</span>,
+                <span style="color: #E6DB74;">'csv'</span>,
+                <span style="color: #E6DB74;">'excel'</span>,
+                { extend: <span style="color: #E6DB74;">'pdfHtml5'</span>,
+                  text: <span style="color: #E6DB74;">'PDF'</span>,
+                  orientation: <span style="color: #E6DB74;">'landscape'</span>,
+                  pageSize: <span style="color: #E6DB74;">'A4'</span>,
+                  download: <span style="color: #E6DB74;">'download'</span>,
+                  filename: <span style="color: #E6DB74;">'*'</span>,
+                  extension: <span style="color: #E6DB74;">'pdf'</span>
+                },
+                <span style="color: #E6DB74;">'print'</span>];
+</pre>
+</div>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline35">
+<h3 id="orgheadline35">Demo 05</h3>
+<p>
+<a href="http://localhost:5000/demo05">http://localhost:5000/demo05</a>
+</p>
+
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline36">
+<h3 id="orgheadline36">As yet unresolved challenges</h3>
+<ul>
+<li>move formatting and options out of main route</li>
+<li>formatting dates like '2009-01-01 00:00:00'</li>
+<li>rounding floats to fixed decimal places</li>
+
+</ul>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline37">
+<h3 id="orgheadline37">thanks for listening</h3>
+<div class="slide-footer">Jason Lewis - @jasonblewis</div>
+</section>
+</section>
+</div>
+</div>
+<script src="/lib/js/head.min.js"></script>
+<script src="/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'fade', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: '/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: '/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: '/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>

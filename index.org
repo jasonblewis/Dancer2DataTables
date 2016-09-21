@@ -1,4 +1,4 @@
-#+REVEAL_ROOT: file:///Users/jason/source/reveal.js
+#+REVEAL_ROOT: /
 #+REVEAL_TRANS: fade
 #+REVEAL_HLEVEL: 10
 #+OPTIONS:  num:nil toc:1 

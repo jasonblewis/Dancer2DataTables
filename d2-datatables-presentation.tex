@@ -1,0 +1,396 @@
+% Created 2016-09-21 Wed 08:46
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Jason Lewis}
+\date{\today}
+\title{Lazy Programmers Guide to html tables in Dancer2}
+\hypersetup{
+ pdfauthor={Jason Lewis},
+ pdftitle={Lazy Programmers Guide to html tables in Dancer2},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 25.1.50.1 (Org mode 8.3.6)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{1}
+\tableofcontents
+
+
+\section*{About me}
+\label{sec:orgheadline5}
+
+Jason Lewis
+
+Owner of a wholesale distribution business in Australia
+
+Jack of all trades…
+\subsection*{contact}
+\label{sec:orgheadline1}
+\begin{itemize}
+\item email: jason@dickson.st
+\item IRC: k-man
+\item Twitter: @jasonblewis
+\end{itemize}
+
+
+\subsection*{Why am I doing this?}
+\label{sec:orgheadline2}
+
+Business reporting done in Crystal Reports
+
+\begin{itemize}
+\item Replace Crystal Reports with something less proprietary.
+\item make reports accessable on the web
+\end{itemize}
+
+\subsection*{Crystal Reports}
+\label{sec:orgheadline3}
+Existing system was built in Crystal Reports
+\begin{itemize}
+\item Pros: 
+\begin{itemize}
+\item very quick to build reports
+\item quite easy to customise and make the reports just so
+\end{itemize}
+\item Cons: 
+\begin{itemize}
+\item proprietary
+\item distribution of reports difficult
+\item not easy to put the reports on the web
+\item win32 only
+\end{itemize}
+\end{itemize}
+\subsection*{Why Dancer2?}
+\label{sec:orgheadline4}
+
+I looked around 
+
+Dancer has an awesome community.
+
+\section*{Hand coded html table in Template}
+\label{sec:orgheadline10}
+\subsection*{Route handler}
+\label{sec:orgheadline6}
+\begin{verbatim}
+get '/demo01' => sub {
+
+  my $sth = database->prepare(
+	'select * from invoices',
+      );
+  $sth->execute() or die $sth->errstr;
+
+  my $fields = $sth->{NAME};
+  my $invoices = $sth->fetchall_arrayref({});
+
+  template 'demo01',
+    { title => 'demo01',
+      fields => $fields,
+      invoices => $invoices,
+    };
+};
+\end{verbatim}
+\subsection*{View}
+\label{sec:orgheadline7}
+\begin{verbatim}
+<table width="80%" id="example-table">
+...
+    <tbody>
+	[% FOREACH invoice IN invoices %]
+	    <tr>
+		[% FOREACH field IN fields %]
+		    <td>[% invoice.$field %]</td>
+		[% END %]
+	    </tr>
+	[% END  %]
+    </tbody>
+</table>
+\end{verbatim}
+\subsection*{Demo 1}
+\label{sec:orgheadline8}
+\url{http://localhost:5000/demo01}
+\subsection*{Pros and Cons}
+\label{sec:orgheadline9}
+\begin{itemize}
+\item pros:
+\begin{itemize}
+\item simple to write
+\end{itemize}
+\item Cons:
+\begin{itemize}
+\item resulting web page very static
+\item tables with many rows cumbersome
+\end{itemize}
+\end{itemize}
+
+
+\section*{add DataTables to the mix}
+\label{sec:orgheadline18}
+hand coded table + DataTables
+\subsection*{What is DataTables?}
+\label{sec:orgheadline11}
+\begin{itemize}
+\item JavaScript framework for manipulating html tables
+\item adds about about 136k to your page (depending on components)
+\item \url{https://datatables.net/}
+\end{itemize}
+\subsection*{Include the CSS and JavaScript for DataTables}
+\label{sec:orgheadline12}
+in the main.tt layout add:
+\begin{verbatim}
+<!-- DataTables -->
+<link rel="stylesheet" 
+      href="[% request.uri_base %]/css/jquery.dataTables.min.css">
+<script type="text/javascript" 
+	src="javascripts/jquery.dataTables.min.js">
+</script>
+\end{verbatim}
+
+\subsection*{call the DataTable enabler after document ready}
+\label{sec:orgheadline13}
+add JavaScript DataTable call to the view:
+\begin{verbatim}
+<script type="text/javascript">
+ $(document).ready(function(){
+     $('#example-datatable').DataTable();
+ });
+</script>
+\end{verbatim}
+\#example-datatable is the CSS id of the table you want to make fancy
+\subsection*{add \#example CSS id to table}
+\label{sec:orgheadline14}
+\begin{verbatim}
+<table width="80%">
+    <thead>
+	<tr>
+	    [% FOREACH field IN fields %]
+		<th>[% field %]</th>
+	    [% END  %]
+	</tr>
+    </thead>
+    ...
+</table>
+\end{verbatim}
+\subsection*{add \#example CSS id to table}
+\label{sec:orgheadline15}
+\begin{verbatim}
+<table width="80%" id="example-datatable">
+    <thead>
+	<tr>
+	    [% FOREACH field IN fields %]
+		<th>[% field %]</th>
+	    [% END  %]
+	</tr>
+    </thead>
+    ...
+</table>
+\end{verbatim}
+\subsection*{Demo 02}
+\label{sec:orgheadline16}
+\url{http://localhost:5000/demo02}
+
+\subsection*{Pros and Cons of hand coded html tables with DataTables}
+\label{sec:orgheadline17}
+\begin{itemize}
+\item pros:
+\begin{itemize}
+\item very configurabe, you can generate the HTML table just how you like it.
+\item easy to give rows and columns custom css IDs and classes
+\end{itemize}
+\item cons:
+\begin{itemize}
+\item not very reusable, you have to hand code each each report
+\item changes to data structure may require updates to the view
+\end{itemize}
+\end{itemize}
+\section*{using JSON with DataTables}
+\label{sec:orgheadline23}
+\begin{itemize}
+\item build the HTML table headings in javascript
+\item pass in a URL that returns JSON to DataTables
+\item DataTables retrieves the data and fills the table.
+\end{itemize}
+
+\subsection*{build the table header in JavaScript}
+\label{sec:orgheadline19}
+insert the \#tableDiv
+\begin{verbatim}
+$( document ).ready( function( $ ) {
+    $.ajax({
+	"url": '[% json_data_url %]',
+	"success": function(json) {
+	    var tableHeaders = '';  
+	    $.each(json.columns, function(i, val){
+		tableHeaders += "<th>" + val.data + "</th>";
+	    });
+
+	    $("#tableDiv").html(
+	      '<table id="displayTable"      \
+		class="display compact"      \
+		cellspacing="0"><thead><tr>'
+	      + tableHeaders + '</tr></thead></table>');
+	    $('#displayTable').DataTable(json);
+	},
+	"dataType": "json"
+    });
+});
+\end{verbatim}
+\subsection*{build a json route}
+\label{sec:orgheadline20}
+Include the columns you want to render and the results from the query
+\begin{verbatim}
+get '/api/demo03' => sub {
+# return query as JSON
+  my $sth = database->prepare(
+	'select * from invoices',
+      );
+  $sth->execute() or die $sth->errstr;
+
+  my $invoices = $sth->fetchall_arrayref({});
+
+  send_as JSON => { columns => [
+    { data => 'InvoiceId'},
+    { data => 'InvoiceDate'},
+    { data => 'CustomerId' },
+    { data => 'BillingAddress'}
+      ],
+    data => $invoices,
+  };
+};
+\end{verbatim}
+\subsection*{Demo 03}
+\label{sec:orgheadline21}
+\url{http://localhost:5000/demo03}
+\subsection*{Pros and Cons}
+\label{sec:orgheadline22}
+\begin{itemize}
+\item pros
+\begin{itemize}
+\item very easy to reuse code
+\item page response feels faster for the user
+\end{itemize}
+\item cons
+\begin{itemize}
+\item you need an API route to return the data
+\item more difficult to customise your resulting html table
+\item adding custom CSS IDs to rows requires writing javascript
+\end{itemize}
+\end{itemize}
+\section*{styling the table}
+\label{sec:orgheadline28}
+DataTables comes with some predefined CSS
+for example, classes for left and right alignment:
+\begin{itemize}
+\item dt-left
+\item dt-right
+\end{itemize}
+\subsection*{css classes}
+\label{sec:orgheadline24}
+Add CSS classes to columns
+\begin{verbatim}
+…
+send_as JSON => { columns => [
+  { className => 'dt-right', data => 'InvoiceId',      },
+  { className => 'dt-left',  data => 'InvoiceDate',    },
+  { className => 'dt-right', data => 'CustomerId',     },
+  { className => 'dt-left',  data => 'BillingAddress',
+       title => 'Billing Address'}
+    ],
+  data => $invoices,
+};
+\end{verbatim}
+\subsection*{Demo 04}
+\label{sec:orgheadline25}
+\url{http://localhost:5000/demo04}
+\subsection*{Other columns properties}
+\label{sec:orgheadline26}
+columns has many other properties that can be useful
+\begin{itemize}
+\item name: Descriptive name for the column
+\item title: Column title
+\item visible: enable or disable display of this column
+\end{itemize}
+\subsection*{problem with this approach}
+\label{sec:orgheadline27}
+formatting creeping into the data view
+\section*{table export options}
+\label{sec:orgheadline38}
+\subsection*{Users are never satisfied}
+\label{sec:orgheadline29}
+\begin{itemize}
+\item Can I export it to Excel?
+\item DataTables makes that easy
+\item Buttons component.
+\end{itemize}
+
+\subsection*{CSS and JavaScript for DataTables Buttons}
+\label{sec:orgheadline30}
+\subsection*{Install pdfmake}
+\label{sec:orgheadline31}
+\begin{verbatim}
+cd MyApp/public
+bower install pdfmake
+\end{verbatim}
+
+\subsection*{add the DataTables Buttons css}
+\label{sec:orgheadline32}
+\begin{verbatim}
+<link rel="stylesheet" 
+  type="text/css" 
+  href="https://cdn.datatables.net/buttons/1.1.1/css/buttons.dataTables.min.css">
+\end{verbatim}
+
+\subsection*{add the JavaScript}
+\label{sec:orgheadline33}
+\begin{verbatim}
+<script src="/javascripts/buttons.html5.min.js"></script>
+<script src="/javascripts/buttons.print.min.js"></script>
+<script src='/bower_components/pdfmake/build/pdfmake.min.js'></script>
+<script src='/bower_components/pdfmake/build/vfs_fonts.js'></script>
+\end{verbatim}
+\subsection*{add buttons option to our javascript}
+\label{sec:orgheadline34}
+Add this to our JavaScript from before
+\begin{verbatim}
+json.dom = 'Blfrtip'; // customise the table
+json.buttons = ['copy',
+		'csv',
+		'excel',
+		{ extend: 'pdfHtml5',
+		  text: 'PDF',
+		  orientation: 'landscape',
+		  pageSize: 'A4',
+		  download: 'download',
+		  filename: '*',
+		  extension: 'pdf'
+		},
+		'print'];
+\end{verbatim}
+\subsection*{Demo 05}
+\label{sec:orgheadline35}
+\url{http://localhost:5000/demo05}
+
+\subsection*{As yet unresolved challenges}
+\label{sec:orgheadline36}
+\begin{itemize}
+\item move formatting and options out of main route
+\item formatting dates like '2009-01-01 00:00:00'
+\item rounding floats to fixed decimal places
+\end{itemize}
+\subsection*{thanks for listening}
+\label{sec:orgheadline37}
+\end{document}

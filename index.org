@@ -4,7 +4,7 @@
 #+OPTIONS:  num:nil toc:1 
 #+REVEAL_SLIDE_FOOTER: Jason Lewis - @jasonblewis
 #+REVEAL_EXTRA_CSS: local.css
-#+TITLE:  Lazy Programmers Guide to html tables in Dancer2
+#+TITLE:  Lazy Programmer's Guide to html tables in Dancer2
 #+EMAIL: jason@dickson.st
 
 * About me
@@ -43,7 +43,7 @@ I looked around
 
 Dancer has an awesome community.
    
-* Hand coded html table in Template
+* Hand coded html table in Template Toolkit
 ** Route handler
 #+BEGIN_SRC perl
 get '/demo01' => sub {
@@ -147,12 +147,12 @@ http://localhost:5000/demo02
 ** Pros and Cons of hand coded html tables with DataTables 
 - pros:
   * very configurabe, you can generate the HTML table just how you like it.
-  * easy to give rows and columns custom css IDs and classes
+  * easy to give rows and columns custom CSS IDs and classes
 - cons:
   * not very reusable, you have to hand code each each report
   * changes to data structure may require updates to the view
 * using JSON with DataTables
-  - build the HTML table headings in javascript
+  - build the HTML table header in javascript
   - pass in a URL that returns JSON to DataTables
   - DataTables retrieves the data and fills the table.
 
@@ -287,7 +287,8 @@ json.buttons = ['copy',
 http://localhost:5000/demo05
 
 ** As yet unresolved challenges
- - move formatting and options out of main route
+ - move formatting and options out of api route
  - formatting dates like '2009-01-01 00:00:00'
  - rounding floats to fixed decimal places
 ** thanks for listening
+Dancer2 with DataTables, in house business reporting.

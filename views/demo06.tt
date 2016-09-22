@@ -1,0 +1,41 @@
+<h1>[% title %]</h1>
+[% INCLUDE datatables_buttons.tt %]
+[% INCLUDE moment_js.tt %]
+
+<div id="loader" class="loader"></div>
+<script>
+ var mycols = [% columns %];
+
+ $( document ).ready( function( $ ) {
+     $.ajax({
+         "url": '[% json_data_url %]',
+         "success": function(json) {
+             console.log(mycols);
+             var tableHeaders = ''; 
+	     $.each(mycols, function(i, val){ tableHeaders += "<th>" + val.data + "</th>";
+             });
+             $("#tableDiv").html('<table id="displayTable" class="display compact" cellspacing="0"><thead><tr>' + tableHeaders + '</tr></thead></table>');
+	     json.columns = mycols;
+	     json.dom = 'Blfrtip'; // customise the table
+	     json.buttons = ['copy',
+			       'csv',
+			       'excel',
+			       {extend: 'pdfHtml5',
+				text: 'PDF',
+				orientation: 'landscape',
+				pageSize: 'A4',
+				download: 'download',
+				filename: '*',
+				extension: 'pdf'
+			       },
+			       'print'];
+
+             $('#displayTable').DataTable(json);
+         },
+         "dataType": "json"
+     });
+ });
+</script>
+<div id="tableDiv"></div>
+
+

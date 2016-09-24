@@ -1,40 +1,45 @@
 <h1>[% title %]</h1>
-[% INCLUDE datatables_buttons.tt %]
 [% INCLUDE moment_js.tt %]
 
 <div id="loader" class="loader"></div>
 <script>
  var mycols = [% columns %];
 
+ // json.columnDefs[0].render = new Function ("data","type","row", "return data.substring(0,6)" );
+
+ function formatdate(data,type,row) {
+     return data.substring(0,6);
+ };
+ 
  $( document ).ready( function( $ ) {
      $.ajax({
          "url": '[% json_data_url %]',
          "success": function(json) {
              console.log(mycols);
              var tableHeaders = ''; 
-	     $.each(mycols, function(i, val){ tableHeaders += "<th>" + val.data + "</th>";
+	     $.each(mycols, function(i, val){
+		 tableHeaders += "<th>" + val.data + "</th>";
              });
+	     $.each(mycols,function(i,val){
+		 if(val.formatter){
+		     console.log(val.data , val.formatter);
+		     if (val.formatter = 'formatdate'){
+			 console.log(val.data , val.formatter);
+			 mycols[i].render = window[val.formatter]; // is mycols accessible here?
+		     };
+		 };
+	     });
              $("#tableDiv").html('<table id="displayTable" class="display compact" cellspacing="0"><thead><tr>' + tableHeaders + '</tr></thead></table>');
 	     json.columns = mycols;
-	     json.dom = 'Blfrtip'; // customise the table
-	     json.buttons = ['copy',
-			       'csv',
-			       'excel',
-			       {extend: 'pdfHtml5',
-				text: 'PDF',
-				orientation: 'landscape',
-				pageSize: 'A4',
-				download: 'download',
-				filename: '*',
-				extension: 'pdf'
-			       },
-			       'print'];
-
+	     json.dom = 'lfrtip'; // customise the table
              $('#displayTable').DataTable(json);
          },
          "dataType": "json"
      });
  });
+</script>
+<script>
+    document.write(moment('2009-01-01 00:00:00').format('DD-MM-YYYY'));
 </script>
 <div id="tableDiv"></div>
 

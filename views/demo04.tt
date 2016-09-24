@@ -12,6 +12,11 @@
              });
              
              $("#tableDiv").html('<table id="displayTable" class="display compact" cellspacing="0"><thead><tr>' + tableHeaders + '</tr></thead></table>');
+	     //console.log(json.columnDefs[0].render);
+	     //	     json.columnDefs[0].render = new Function ("data","type","row", "return data.substring(0,6)" );
+//	     console.log(eval('fn =' + json.columnDefs[0].render));
+//	     json.columnDefs[0].render = new Function ("data","type","row", "return data.substring(0,6)" );
+	     json.columnDefs[0].render = eval('fn =' + json.columnDefs[0].render); // convert the string of the function to a real function
 	     json.dom = 'Blfrtip'; // customise the table
 	     json.buttons = ['copy',
 			       'csv',

@@ -147,30 +147,24 @@ get '/demo05' => sub {
 ## demo 06
 ## send formatting data from the main route rather than the api route
 get '/demo06' => sub {
-  my $j = JSON->new->encode([
+  my $columns = JSON->new->encode([
     { className => 'dt-right', data => 'InvoiceId',      },
-    { className => 'dt-left',  data => 'InvoiceDate', formatter => 'formatdateold'   },
+    { className => 'dt-left',  data => 'InvoiceDate', formatfn=> 'formatdate'   },
     { className => 'dt-right', data => 'CustomerId',     },
     { className => 'dt-left',  data => 'BillingAddress', title => 'Billing Address'},
     { data => 'BillingCity'},
     { data => 'BillingState'}, 
     { data => 'BillingCountry'}, 
-    { data => 'BillingPostalCode'}, 
+    { data => 'BillingPostalCode', className => 'dt-right', title => 'Post Code' }, 
     { className => 'dt-right', data => 'Total'},
-    { className => 'dt-right', data => 'float', formatter => 'round2dp', },
+    { className => 'dt-right', data => 'float', formatfn => 'round2dp', },
   ],);
 
 
   template 'demo06', { # now we can re-use the previous template
     title => 'demo06 JSON API with CSS classes and buttons',
     json_data_url => '/api/demo06',
-    columns => $j,
-    columnDefs => [
-      { "render" => q/function ( data, type, row ) { return data.substring(0,10); }/,
-	"targets" => 1,
-      },
-    ],
-    
+    columns => $columns,
   };
 };
 

@@ -3,7 +3,6 @@
 
 <div id="loader" class="loader"></div>
 <script>
- var mycols = [% columns %];
 
  // json.columnDefs[0].render = new Function ("data","type","row", "return data.substring(0,6)" );
 
@@ -20,20 +19,17 @@
  }
  
  $( document ).ready( function( $ ) {
+     var mycols = [% columns %];
      $.ajax({
          "url": '[% json_data_url %]',
          "success": function(json) {
-             console.log(mycols);
              var tableHeaders = ''; 
 	     $.each(mycols, function(i, val){
 		 tableHeaders += "<th>" + val.data + "</th>";
-             });
-	     $.each(mycols,function(i,val){
-		 if(val.formatter){
-		     console.log(val.data , val.formatter);
-		     mycols[i].render = window[val.formatter]; // get the name of the formatting function to use
+		 if(val.formatfn){ // check if we have a formatter for this column
+		     mycols[i].render = window[val.formatfn]; // get the name of the formatting function to use
 		 };
-	     });
+             });
              $("#tableDiv").html('<table id="displayTable" class="display compact" cellspacing="0"><thead><tr>' + tableHeaders + '</tr></thead></table>');
 	     json.columns = mycols;
 	     json.dom = 'lfrtip'; // customise the table

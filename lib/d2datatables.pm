@@ -149,14 +149,15 @@ get '/demo05' => sub {
 get '/demo06' => sub {
   my $j = JSON->new->encode([
     { className => 'dt-right', data => 'InvoiceId',      },
-    { className => 'dt-left',  data => 'InvoiceDate', formatter => 'formatdate'   },
+    { className => 'dt-left',  data => 'InvoiceDate', formatter => 'formatdateold'   },
     { className => 'dt-right', data => 'CustomerId',     },
     { className => 'dt-left',  data => 'BillingAddress', title => 'Billing Address'},
     { data => 'BillingCity'},
     { data => 'BillingState'}, 
     { data => 'BillingCountry'}, 
     { data => 'BillingPostalCode'}, 
-    { data => 'Total'},
+    { className => 'dt-right', data => 'Total'},
+    { className => 'dt-right', data => 'float', formatter => 'round2dp', },
   ],);
 
 

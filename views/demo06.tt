@@ -7,9 +7,17 @@
 
  // json.columnDefs[0].render = new Function ("data","type","row", "return data.substring(0,6)" );
 
- function formatdate(data,type,row) {
-     return data.substring(0,6);
+ function formatdateold(data,type,row) {
+     return data.substring(0,4);
  };
+ 
+ function formatdate(data,type,row) {
+     return moment(data).format('DD-MMM-YYYY');
+ };
+
+ function round2dp(data,type,row){
+     return Number(Math.round(data+'e'+ '2')+'e-'+ '2');
+ }
  
  $( document ).ready( function( $ ) {
      $.ajax({
@@ -23,10 +31,7 @@
 	     $.each(mycols,function(i,val){
 		 if(val.formatter){
 		     console.log(val.data , val.formatter);
-		     if (val.formatter = 'formatdate'){
-			 console.log(val.data , val.formatter);
-			 mycols[i].render = window[val.formatter]; // is mycols accessible here?
-		     };
+		     mycols[i].render = window[val.formatter]; // get the name of the formatting function to use
 		 };
 	     });
              $("#tableDiv").html('<table id="displayTable" class="display compact" cellspacing="0"><thead><tr>' + tableHeaders + '</tr></thead></table>');
